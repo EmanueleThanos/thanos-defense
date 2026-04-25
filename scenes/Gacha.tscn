@@ -1,10 +1,17 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/gacha_scene.gd" id="1_gacha_script"]
 
 [sub_resource type="Curve" id="Curve_particles"]
 _data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
 point_count = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ball"]
+bg_color = Color(0.85, 0.12, 0.12, 1)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_radius_bottom_right = 50
+corner_radius_bottom_left = 50
 
 [node name="Gacha" type="Control"]
 layout_mode = 3
@@ -24,7 +31,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.08, 0.08, 0.1, 1)
 
-[node name="Ball" type="ColorRect" parent="."]
+[node name="Ball" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -38,6 +45,7 @@ offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(50, 50)
+theme_override_styles/panel = SubResource("StyleBoxFlat_ball")
 
 [node name="PrizeLight" type="CPUParticles2D" parent="."]
 position = Vector2(640, 360)

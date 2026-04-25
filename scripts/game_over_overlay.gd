@@ -45,8 +45,8 @@ func _build_ui() -> void:
 
 	var retry_btn := Button.new()
 	retry_btn.text = "Reintentar"
-	retry_btn.position = Vector2(125, 225)
-	retry_btn.size = Vector2(250, 58)
+	retry_btn.position = Vector2(25, 225)
+	retry_btn.size = Vector2(205, 58)
 	retry_btn.add_theme_font_size_override("font_size", 20)
 	var s_normal := StyleBoxFlat.new()
 	s_normal.bg_color = Color(0.18, 0.40, 0.82)
@@ -63,6 +63,27 @@ func _build_ui() -> void:
 	retry_btn.add_theme_color_override("font_color", Color.WHITE)
 	retry_btn.pressed.connect(func(): get_tree().reload_current_scene())
 	panel.add_child(retry_btn)
+
+	var menu_btn := Button.new()
+	menu_btn.text = "Menú Principal"
+	menu_btn.position = Vector2(270, 225)
+	menu_btn.size = Vector2(205, 58)
+	menu_btn.add_theme_font_size_override("font_size", 20)
+	var m_normal := StyleBoxFlat.new()
+	m_normal.bg_color = Color(0.20, 0.20, 0.20)
+	m_normal.set_corner_radius_all(10)
+	menu_btn.add_theme_stylebox_override("normal", m_normal)
+	var m_hover := StyleBoxFlat.new()
+	m_hover.bg_color = Color(0.35, 0.35, 0.35)
+	m_hover.set_corner_radius_all(10)
+	menu_btn.add_theme_stylebox_override("hover", m_hover)
+	var m_pressed := StyleBoxFlat.new()
+	m_pressed.bg_color = Color(0.12, 0.12, 0.12)
+	m_pressed.set_corner_radius_all(10)
+	menu_btn.add_theme_stylebox_override("pressed", m_pressed)
+	menu_btn.add_theme_color_override("font_color", Color.WHITE)
+	menu_btn.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/Menu.tscn"))
+	panel.add_child(menu_btn)
 
 func show_result(player_won: bool) -> void:
 	visible = true

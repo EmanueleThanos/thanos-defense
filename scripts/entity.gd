@@ -77,6 +77,12 @@ func _on_attack_cooldown_timer_timeout() -> void:
 		wall_placed = false
 		return
 
+	# Efectos de ataque (Battle Cats style)
+	if has_node("HitParticles"):
+		$HitParticles.emitting = true
+	if has_node("AttackSound") and $AttackSound.stream:
+		$AttackSound.play()
+
 	if is_area_attack:
 		for target in targets:
 			if target.has_method("take_damage"):
@@ -99,8 +105,6 @@ func _place_wall() -> void:
 func take_damage(amount: int) -> void:
 	current_health -= amount
 	
-	# Lógica de Knockback con EXCEPCIONES:
-	# No retrocede si: es el Tanque (unit_type 2) o si ya está retrocediendo
 	if amount >= max_health * 0.25 and state != State.KNOCKBACK and unit_type != 2:
 		apply_knockback()
 	
@@ -115,19 +119,30 @@ func apply_knockback() -> void:
 	state = State.KNOCKBACK
 	$AttackCooldownTimer.stop()
 	
-	var knockback_distance = 50.0
-	var knockback_duration = 0.3
+	var knockback_distance = 60.0
+	var knockback_duration = 0.4
 	var direction = -1 if is_player_unit else 1
 	var target_x = position.x + (knockback_distance * direction)
 	
-	var tween = create_tween()
+	# Ángulo de inclinación (Tilt)
+	var tilt_angle = -0.4 if is_player_unit else 0.4
+	
+	var tween = create_tween().set_parallel(true)
+	# Mover hacia atrás
 	tween.tween_property(self, "position:x", target_x, knockback_duration).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	# Inclinar visualmente
+	tween.tween_property($Visual, "rotation", tilt_angle, knockback_duration * 0.4).set_trans(Tween.TRANS_SINE)
 	
 	var visual_tween = create_tween()
 	visual_tween.tween_property($Visual, "modulate:a", 0.5, 0.1)
 	visual_tween.tween_property($Visual, "modulate:a", 1.0, 0.1)
 	
 	await tween.finished
+	
+	# Recuperar postura suavemente
+	var recovery_tween = create_tween()
+	recovery_tween.tween_property($Visual, "rotation", 0.0, 0.2)
+	await recovery_tween.finished
 	
 	if is_instance_valid(self) and current_health > 0:
 		state = State.MOVING

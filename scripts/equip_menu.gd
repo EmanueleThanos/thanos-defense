@@ -17,7 +17,7 @@ func _refresh_ui():
 		var unit = GameManager.UNIT_STATS[i]
 		
 		btn.custom_minimum_size = Vector2(150, 150)
-		btn.text = unit.name + "\n" + str(GameManager.UNIT_COSTS[i])
+		btn.text = "%s\nNv.%d\n$%d" % [unit.name, GameManager.unit_levels[i], GameManager.UNIT_COSTS[i]]
 		
 		# Si no la tenemos, desactivar o poner color oscuro
 		if not GameManager.owned_units.has(i):

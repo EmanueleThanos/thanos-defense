@@ -10,17 +10,26 @@ const UNIT_STATS := [
 	{"name": "Básico", "speed": 90.0,  "health": 80,  "damage": 12, "cooldown": 0.7, "range": 60.0,  "area": false},
 ]
 
-var money: float = 200.0
-var enemy_money: float = 200.0
+const STARTING_MONEY := 150.0
+
+var money: float = STARTING_MONEY
+var enemy_money: float = STARTING_MONEY
 var money_rate: float = 15.0
 
 # --- Sistema de Inventario y Gacha ---
 var tickets: int = 5
-var owned_units: Array[int] = [3] 
+var owned_units: Array[int] = [3]
 var active_deck: Array[int] = [3]
+var unit_levels: Array[int] = [1, 1, 1, 1]
 
 signal money_changed(new_amount: float)
 signal tickets_changed(new_amount: int)
+signal unit_leveled_up(unit_id: int, new_level: int)
+
+func reset_battle() -> void:
+	money = STARTING_MONEY
+	enemy_money = STARTING_MONEY
+	money_changed.emit(money)
 
 func _process(delta: float) -> void:
 	if get_tree().current_scene and get_tree().current_scene.name == "Main":
@@ -35,20 +44,54 @@ func spend(cost: int) -> void:
 	money -= cost
 	money_changed.emit(money)
 
+func get_stat_multiplier(unit_id: int) -> float:
+	return 1.0 + 0.25 * (unit_levels[unit_id] - 1)
+
+# --- Pool de Gacha ---
+# Para añadir una bola nueva: añade una entrada aquí. Nada más cambia.
+#   unit_id : índice en UNIT_STATS
+#   weight  : peso de probabilidad (más = más común)
+#   color   : color del premio al revelar
+const GACHA_POOL := [
+	{"unit_id": 0, "weight": 40, "color": Color.CORNFLOWER_BLUE},
+	{"unit_id": 1, "weight": 25, "color": Color.INDIAN_RED},
+	{"unit_id": 2, "weight": 10, "color": Color.DARK_GREEN},
+]
+
+func _weighted_gacha_draw() -> Dictionary:
+	var total := 0.0
+	for entry in GACHA_POOL:
+		total += entry["weight"]
+	var roll := randf() * total
+	var cumulative := 0.0
+	for entry in GACHA_POOL:
+		cumulative += entry["weight"]
+		if roll <= cumulative:
+			return entry
+	return GACHA_POOL[-1]
+
 # --- Lógica de Gacha ---
-func draw_gacha() -> int:
-	if tickets <= 0: return -1
-	
+func draw_gacha() -> Dictionary:
+	if tickets <= 0:
+		return {"unit_id": -1, "leveled_up": false, "new_level": 0, "color": Color.WHITE}
+
 	tickets -= 1
 	tickets_changed.emit(tickets)
-	
-	var pool = [0, 1, 2]
-	var result = pool[randi() % pool.size()]
-	
-	if not owned_units.has(result):
+
+	var entry := _weighted_gacha_draw()
+	var result: int = entry["unit_id"]
+
+	if owned_units.has(result):
+		unit_levels[result] += 1
+		unit_leveled_up.emit(result, unit_levels[result])
+		return {"unit_id": result, "leveled_up": true, "new_level": unit_levels[result], "color": entry["color"]}
+	else:
 		owned_units.append(result)
-	
-	return result
+		return {"unit_id": result, "leveled_up": false, "new_level": 1, "color": entry["color"]}
+
+func reward_win() -> void:
+	tickets += 1
+	tickets_changed.emit(tickets)
 
 func add_to_deck(unit_id: int):
 	if owned_units.has(unit_id) and not active_deck.has(unit_id) and active_deck.size() < 5:

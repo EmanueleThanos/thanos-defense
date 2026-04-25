@@ -29,19 +29,21 @@ func _on_draw_button_pressed():
 	tween.tween_property(ball, "rotation_degrees", 0.0, 0.1)
 	
 	await tween.finished
-	
-	# 2. Explosión de luz
-	var result_id = GameManager.draw_gacha()
+
+	var draw = GameManager.draw_gacha()
+	var result_id: int = draw["unit_id"]
 	ball.hide()
 	light.show()
 	light.emitting = true
-	
+
 	await get_tree().create_timer(0.5).timeout
-	
-	# 3. Mostrar el premio
+
 	prize_display.show()
-	prize_display.color = [Color.CORNFLOWER_BLUE, Color.INDIAN_RED, Color.DARK_GREEN][result_id]
-	result_label.text = "¡Has conseguido: " + GameManager.UNIT_STATS[result_id].name + "!"
+	prize_display.color = draw["color"]
+	if draw["leveled_up"]:
+		result_label.text = "¡%s subió al nivel %d!" % [GameManager.UNIT_STATS[result_id].name, draw["new_level"]]
+	else:
+		result_label.text = "¡Has conseguido: " + GameManager.UNIT_STATS[result_id].name + "!"
 	
 	await get_tree().create_timer(1.0).timeout
 	is_animating = false

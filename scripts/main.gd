@@ -2,9 +2,12 @@ extends Node2D
 
 var entity_scene = preload("res://scenes/Entity.tscn")
 
+func _ready() -> void:
+	GameManager.reset_battle()
+
 const PLAYER_SPAWN_X := 195.0
 const ENEMY_SPAWN_X := 1080.0
-const SPAWN_Y := 520.0
+const SPAWN_Y := 600.0
 
 # --- Player spawning ---
 
@@ -52,12 +55,13 @@ func _weighted_choice(affordable: Array[int]) -> int:
 
 func _spawn_unit(type_index: int, player: bool) -> void:
 	var stats: Dictionary = GameManager.UNIT_STATS[type_index]
+	var mult := GameManager.get_stat_multiplier(type_index) if player else 1.0
 	var entity = entity_scene.instantiate()
 	entity.unit_type = type_index
-	entity.speed = stats["speed"]
-	entity.max_health = stats["health"]
-	entity.damage = stats["damage"]
-	entity.attack_cooldown = stats["cooldown"]
+	entity.speed = stats["speed"] * mult
+	entity.max_health = int(stats["health"] * mult)
+	entity.damage = int(stats["damage"] * mult)
+	entity.attack_cooldown = stats["cooldown"] / mult
 	entity.attack_range = stats["range"]
 	entity.is_area_attack = stats["area"]
 	entity.is_player_unit = player
@@ -68,6 +72,8 @@ func _spawn_unit(type_index: int, player: bool) -> void:
 
 func _end_game(player_won: bool) -> void:
 	$EnemySpawnTimer.stop()
+	if player_won:
+		GameManager.reward_win()
 	$GameOverOverlay.show_result(player_won)
 
 func _on_player_base_base_destroyed(_is_player: bool) -> void:
