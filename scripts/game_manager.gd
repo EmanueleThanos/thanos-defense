@@ -14,7 +14,114 @@ const STARTING_MONEY := 150.0
 
 var money: float = STARTING_MONEY
 var enemy_money: float = STARTING_MONEY
-var money_rate: float = 15.0
+const ENEMY_INCOME_RATE := 15.0
+
+# --- Sistema de mejoras permanentes ---
+var mp: int = 0
+var production_level: int = 1   # max 100  (MP/s en batalla)
+var base_hp_level: int = 1      # max 50   (+250 HP por nivel)
+var max_units_level: int = 1    # max 8    (3–10 unidades simultáneas)
+
+signal mp_changed(new_amount: int)
+
+func get_money_rate() -> float:
+	if production_level >= 100:
+		return 1000.0
+	return 15.0 + (485.0 / 98.0) * (production_level - 1)
+
+func get_player_max_hp() -> int:
+	return 1000 + 250 * (base_hp_level - 1)
+
+func get_max_units() -> int:
+	return 2 + max_units_level   # nivel 1=3, nivel 8=10
+
+# Coste de subir del nivel N al N+1
+func upgrade_cost_unit(level: int) -> int:
+	if level >= 99: return 40 * 99 * 8   # 31 680 MP para el nivel 100
+	return 40 * level
+
+func upgrade_cost_production(level: int) -> int:
+	if level >= 99: return 80 * 99 * 6   # 47 520 MP para el nivel 100
+	return 80 * level
+
+func upgrade_cost_base_hp(level: int) -> int:
+	return 60 * level                     # sin tope especial
+
+func upgrade_cost_max_units(level: int) -> int:
+	return 300 * level
+
+func try_upgrade_unit(unit_id: int) -> bool:
+	var lvl := unit_levels[unit_id]
+	if lvl >= 100: return false
+	var cost := upgrade_cost_unit(lvl)
+	if mp < cost: return false
+	mp -= cost
+	unit_levels[unit_id] += 1
+	mp_changed.emit(mp)
+	unit_leveled_up.emit(unit_id, unit_levels[unit_id])
+	return true
+
+func try_upgrade_production() -> bool:
+	if production_level >= 100: return false
+	var cost := upgrade_cost_production(production_level)
+	if mp < cost: return false
+	mp -= cost
+	production_level += 1
+	mp_changed.emit(mp)
+	return true
+
+func try_upgrade_base_hp() -> bool:
+	if base_hp_level >= 50: return false
+	var cost := upgrade_cost_base_hp(base_hp_level)
+	if mp < cost: return false
+	mp -= cost
+	base_hp_level += 1
+	mp_changed.emit(mp)
+	return true
+
+func try_upgrade_max_units() -> bool:
+	if max_units_level >= 8: return false
+	var cost := upgrade_cost_max_units(max_units_level)
+	if mp < cost: return false
+	mp -= cost
+	max_units_level += 1
+	mp_changed.emit(mp)
+	return true
+
+# --- Progresión de fases ---
+var current_chapter: String = ""
+var current_stage: int = 0
+# Guarda el número de la última fase completada por capítulo (0 = ninguna)
+var chapter_progress: Dictionary = {"legend": 0, "future": 0, "story": 0}
+
+func start_stage(chapter: String, stage: int) -> void:
+	current_chapter = chapter
+	current_stage = stage
+	reset_battle()
+
+func complete_stage(chapter: String, stage: int) -> void:
+	if chapter == "" or stage <= 0:
+		return
+	if stage > chapter_progress.get(chapter, 0):
+		chapter_progress[chapter] = stage
+
+func is_stage_unlocked(chapter: String, stage: int) -> bool:
+	return stage == 1 or stage <= chapter_progress.get(chapter, 0) + 1
+
+# Dificultad por fase: HP base enemiga y nivel de las unidades enemigas
+const STAGE_DIFFICULTY := {
+	"legend_1": {"enemy_hp": 1000,  "enemy_unit_level": 1,  "ticket_reward": 1},
+	"legend_2": {"enemy_hp": 1500,  "enemy_unit_level": 3,  "ticket_reward": 3},
+	"legend_3": {"enemy_hp": 10666, "enemy_unit_level": 30, "ticket_reward": 12},
+}
+
+func get_stage_difficulty() -> Dictionary:
+	var key := current_chapter + "_" + str(current_stage)
+	return STAGE_DIFFICULTY.get(key, {"enemy_hp": 1000, "enemy_unit_level": 1})
+
+func get_enemy_level_multiplier() -> float:
+	var level: int = get_stage_difficulty().get("enemy_unit_level", 1)
+	return 1.0 + 0.25 * (level - 1)
 
 # --- Sistema de Inventario y Gacha ---
 var tickets: int = 5
@@ -33,8 +140,8 @@ func reset_battle() -> void:
 
 func _process(delta: float) -> void:
 	if get_tree().current_scene and get_tree().current_scene.name == "Main":
-		money += money_rate * delta
-		enemy_money += money_rate * delta
+		money += get_money_rate() * delta
+		enemy_money += ENEMY_INCOME_RATE * delta
 		money_changed.emit(money)
 
 func can_afford(cost: int) -> bool:
@@ -73,7 +180,7 @@ func _weighted_gacha_draw() -> Dictionary:
 # --- Lógica de Gacha ---
 func draw_gacha() -> Dictionary:
 	if tickets <= 0:
-		return {"unit_id": -1, "leveled_up": false, "new_level": 0, "color": Color.WHITE}
+		return {"unit_id": -1, "is_duplicate": false, "color": Color.WHITE}
 
 	tickets -= 1
 	tickets_changed.emit(tickets)
@@ -82,19 +189,46 @@ func draw_gacha() -> Dictionary:
 	var result: int = entry["unit_id"]
 
 	if owned_units.has(result):
-		unit_levels[result] += 1
-		unit_leveled_up.emit(result, unit_levels[result])
-		return {"unit_id": result, "leveled_up": true, "new_level": unit_levels[result], "color": entry["color"]}
+		return {"unit_id": result, "is_duplicate": true, "color": entry["color"]}
 	else:
 		owned_units.append(result)
-		return {"unit_id": result, "leveled_up": false, "new_level": 1, "color": entry["color"]}
+		return {"unit_id": result, "is_duplicate": false, "color": entry["color"]}
+
+func level_up_unit(unit_id: int) -> void:
+	if unit_levels[unit_id] < 100:
+		unit_levels[unit_id] += 1
+		unit_leveled_up.emit(unit_id, unit_levels[unit_id])
+
+func sell_gacha_duplicate(unit_id: int) -> void:
+	mp += get_sell_price(unit_id)
+	mp_changed.emit(mp)
+
+func draw_gacha_multi(count: int) -> Array:
+	var results := []
+	for i in range(count):
+		var draw = draw_gacha()
+		if draw["unit_id"] >= 0 and draw["is_duplicate"]:
+			var can_level := unit_levels[draw["unit_id"]] < 100
+			if can_level:
+				level_up_unit(draw["unit_id"])
+			draw["leveled_up"] = can_level
+			draw["new_level"] = unit_levels[draw["unit_id"]]
+		else:
+			draw["leveled_up"] = false
+			draw["new_level"] = 1
+		results.append(draw)
+	return results
 
 func reward_win() -> void:
-	tickets += 1
+	var reward: int = get_stage_difficulty().get("ticket_reward", 1)
+	tickets += reward
 	tickets_changed.emit(tickets)
 
+func get_sell_price(unit_id: int) -> int:
+	return int(UNIT_COSTS[unit_id] * 0.4)
+
 func add_to_deck(unit_id: int):
-	if owned_units.has(unit_id) and not active_deck.has(unit_id) and active_deck.size() < 5:
+	if owned_units.has(unit_id) and not active_deck.has(unit_id) and active_deck.size() < get_max_units():
 		active_deck.append(unit_id)
 
 func remove_from_deck(unit_id: int):

@@ -101,14 +101,41 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -100.0
+offset_left = -215.0
 offset_top = -150.0
-offset_right = 100.0
+offset_right = -15.0
 offset_bottom = -70.0
 grow_horizontal = 2
 grow_vertical = 0
 theme_override_font_sizes/font_size = 24
 text = "ABRIR BOLA"
+
+[node name="MultiDrawButton" type="Button" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 15.0
+offset_top = -150.0
+offset_right = 215.0
+offset_bottom = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 24
+text = "ABRIR x12"
+
+[node name="TicketsLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 1050.0
+offset_top = 40.0
+offset_right = 1240.0
+offset_bottom = 90.0
+theme_override_font_sizes/font_size = 26
+text = "🎟 Tickets: 5"
+horizontal_alignment = 1
 
 [node name="BackButton" type="Button" parent="."]
 layout_mode = 0
@@ -119,4 +146,5 @@ offset_bottom = 90.0
 text = "VOLVER"
 
 [connection signal="pressed" from="DrawButton" to="." method="_on_draw_button_pressed"]
+[connection signal="pressed" from="MultiDrawButton" to="." method="_on_multi_draw_button_pressed"]
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]

@@ -1,0 +1,78 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/legend_map.gd" id="1_legend_script"]
+
+[node name="MapLegend" type="Node2D"]
+script = ExtResource("1_legend_script")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(450, 1050)
+
+[node name="Stage1" type="Button" parent="."]
+offset_left = 400.0
+offset_top = 980.0
+offset_right = 500.0
+offset_bottom = 1080.0
+flat = true
+theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.06, 0.0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 11
+text = "PRE-\nLEYENDA"
+horizontal_alignment = 1
+
+[node name="Stage2" type="Button" parent="."]
+offset_left = 1330.0
+offset_top = 655.0
+offset_right = 1430.0
+offset_bottom = 755.0
+flat = true
+theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.06, 0.0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 11
+text = "PRE-LEY.\nNORMAL"
+horizontal_alignment = 1
+
+[node name="Stage3" type="Button" parent="."]
+offset_left = 2230.0
+offset_top = 315.0
+offset_right = 2330.0
+offset_bottom = 415.0
+flat = true
+theme_override_colors/font_color = Color(1, 0.97, 0.85, 1)
+theme_override_colors/font_outline_color = Color(0.1, 0.06, 0.0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 11
+text = "PRE-LEY.\nDIFÍCIL"
+horizontal_alignment = 1
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="BackButton" type="Button" parent="CanvasLayer"]
+offset_left = 40.0
+offset_top = 40.0
+offset_right = 160.0
+offset_bottom = 90.0
+text = "VOLVER"
+
+[node name="PhaseTitle" type="Label" parent="CanvasLayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -250.0
+offset_top = 20.0
+offset_right = 250.0
+offset_bottom = 70.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.95, 0.70, 1)
+theme_override_colors/font_outline_color = Color(0.12, 0.08, 0.0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 32
+text = "STORIES OF LEGEND"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="Stage1" to="." method="_on_stage_1_pressed"]
+[connection signal="pressed" from="Stage2" to="." method="_on_stage_2_pressed"]
+[connection signal="pressed" from="Stage3" to="." method="_on_stage_3_pressed"]
+[connection signal="pressed" from="CanvasLayer/BackButton" to="." method="_on_back_button_pressed"]

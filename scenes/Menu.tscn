@@ -42,9 +42,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -150.0
-offset_top = -100.0
+offset_top = -120.0
 offset_right = 150.0
-offset_bottom = 200.0
+offset_bottom = 230.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 20
@@ -67,6 +67,14 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "EQUIP"
 
+[node name="MejorarButton" type="Button" parent="VBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(1, 0.9, 0.2, 1)
+text = "MEJORAR"
+
 [node name="TicketsLabel" type="Label" parent="."]
 layout_mode = 1
 anchors_preset = 1
@@ -75,11 +83,26 @@ anchor_right = 1.0
 offset_left = -200.0
 offset_top = 20.0
 offset_right = -20.0
-offset_bottom = 60.0
+offset_bottom = 55.0
 grow_horizontal = 0
 text = "Tickets: 5"
+horizontal_alignment = 2
+
+[node name="MPLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = 58.0
+offset_right = -20.0
+offset_bottom = 93.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(0.4, 1, 0.6, 1)
+text = "MP: 0"
 horizontal_alignment = 2
 
 [connection signal="pressed" from="VBoxContainer/BattleButton" to="." method="_on_battle_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/GachaButton" to="." method="_on_gacha_button_pressed"]
 [connection signal="pressed" from="VBoxContainer/EquipButton" to="." method="_on_equip_button_pressed"]
+[connection signal="pressed" from="VBoxContainer/MejorarButton" to="." method="_on_mejorar_button_pressed"]

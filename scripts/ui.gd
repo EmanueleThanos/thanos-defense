@@ -2,7 +2,8 @@ extends CanvasLayer
 
 signal spawn_requested(unit_index: int)
 
-const TOTAL_SLOTS := 5
+var TOTAL_SLOTS: int:
+	get: return GameManager.get_max_units()
 
 const UNIT_COLORS := [
 	Color.CORNFLOWER_BLUE,
@@ -41,7 +42,7 @@ func _input(event: InputEvent) -> void:
 
 func _on_money_changed(amount: float) -> void:
 	if not is_instance_valid(self): return
-	$BottomBar/MoneyLabel.text = "$ %d" % int(amount)
+	$BottomBar/MoneyLabel.text = "€ %d" % int(amount)
 	for unit_id in buttons.keys():
 		var btn = buttons[unit_id]
 		if is_instance_valid(btn):
@@ -70,7 +71,7 @@ func _create_unit_button(unit_id: int, deck_pos: int) -> Button:
 	btn.add_child(key_label)
 
 	var cost_label := Label.new()
-	cost_label.text = "$%d" % GameManager.UNIT_COSTS[unit_id]
+	cost_label.text = "€%d" % GameManager.UNIT_COSTS[unit_id]
 	cost_label.size = Vector2(80, 20)
 	cost_label.position = Vector2(5, 68)
 	cost_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

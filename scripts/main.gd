@@ -4,6 +4,9 @@ var entity_scene = preload("res://scenes/Entity.tscn")
 
 func _ready() -> void:
 	GameManager.reset_battle()
+	var diff := GameManager.get_stage_difficulty()
+	$EnemyBase.init_health(diff.get("enemy_hp", 1000))
+	$PlayerBase.init_health(GameManager.get_player_max_hp())
 
 const PLAYER_SPAWN_X := 195.0
 const ENEMY_SPAWN_X := 1080.0
@@ -55,13 +58,13 @@ func _weighted_choice(affordable: Array[int]) -> int:
 
 func _spawn_unit(type_index: int, player: bool) -> void:
 	var stats: Dictionary = GameManager.UNIT_STATS[type_index]
-	var mult := GameManager.get_stat_multiplier(type_index) if player else 1.0
+	var mult := GameManager.get_stat_multiplier(type_index) if player else GameManager.get_enemy_level_multiplier()
 	var entity = entity_scene.instantiate()
 	entity.unit_type = type_index
-	entity.speed = stats["speed"] * mult
+	entity.speed = stats["speed"]
 	entity.max_health = int(stats["health"] * mult)
 	entity.damage = int(stats["damage"] * mult)
-	entity.attack_cooldown = stats["cooldown"] / mult
+	entity.attack_cooldown = stats["cooldown"]
 	entity.attack_range = stats["range"]
 	entity.is_area_attack = stats["area"]
 	entity.is_player_unit = player
@@ -73,6 +76,7 @@ func _spawn_unit(type_index: int, player: bool) -> void:
 func _end_game(player_won: bool) -> void:
 	$EnemySpawnTimer.stop()
 	if player_won:
+		GameManager.complete_stage(GameManager.current_chapter, GameManager.current_stage)
 		GameManager.reward_win()
 	$GameOverOverlay.show_result(player_won)
 

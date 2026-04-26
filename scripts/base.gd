@@ -29,6 +29,11 @@ func _ready() -> void:
 	health_label.add_theme_font_size_override("font_size", 16)
 	_update_label()
 
+func init_health(hp: int) -> void:
+	max_health = hp
+	current_health = hp
+	_update_label()
+
 func _update_label() -> void:
 	health_label.text = "%d / %d" % [current_health, max_health]
 

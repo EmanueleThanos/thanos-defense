@@ -1,0 +1,44 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/draggable_map.gd" id="1_map_script"]
+[ext_resource type="Texture2D" path="res://assets/map_story.jpg" id="2_map_tex"]
+
+[node name="MapStory" type="Node2D"]
+script = ExtResource("1_map_script")
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("2_map_tex")
+centered = false
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+limit_left = 0
+limit_top = 0
+limit_right = 2816
+limit_bottom = 1536
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="BackButton" type="Button" parent="CanvasLayer"]
+offset_left = 40.0
+offset_top = 40.0
+offset_right = 160.0
+offset_bottom = 90.0
+text = "VOLVER"
+
+[node name="PhaseTitle" type="Label" parent="CanvasLayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -200.0
+offset_top = 20.0
+offset_right = 200.0
+offset_bottom = 70.0
+grow_horizontal = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 32
+text = "THE EARTH"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="CanvasLayer/BackButton" to="." method="_on_back_button_pressed"]

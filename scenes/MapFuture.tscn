@@ -1,0 +1,106 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/future_map.gd" id="1_future_script"]
+
+[node name="MapFuture" type="Node2D"]
+script = ExtResource("1_future_script")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(500, 1000)
+
+[node name="Stage1" type="Button" parent="."]
+offset_left = 445.0
+offset_top = 935.0
+offset_right = 515.0
+offset_bottom = 1005.0
+flat = true
+theme_override_colors/font_color = Color(0.9, 0.97, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0.1, 0.3, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 12
+text = "EARTH\n  1"
+horizontal_alignment = 1
+
+[node name="Stage2" type="Button" parent="."]
+offset_left = 665.0
+offset_top = 805.0
+offset_right = 735.0
+offset_bottom = 875.0
+flat = true
+theme_override_colors/font_color = Color(0.9, 0.97, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0.1, 0.3, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 12
+text = "ORBIT\n  2"
+horizontal_alignment = 1
+
+[node name="Stage3" type="Button" parent="."]
+offset_left = 1185.0
+offset_top = 625.0
+offset_right = 1255.0
+offset_bottom = 695.0
+flat = true
+theme_override_colors/font_color = Color(0.9, 0.97, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0.1, 0.3, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 12
+text = "MOON\n  3"
+horizontal_alignment = 1
+
+[node name="Stage4" type="Button" parent="."]
+offset_left = 1835.0
+offset_top = 470.0
+offset_right = 1905.0
+offset_bottom = 540.0
+flat = true
+theme_override_colors/font_color = Color(0.9, 0.97, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0.1, 0.3, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 12
+text = "BELT\n  4"
+horizontal_alignment = 1
+
+[node name="Stage5" type="Button" parent="."]
+offset_left = 2585.0
+offset_top = 325.0
+offset_right = 2655.0
+offset_bottom = 395.0
+flat = true
+theme_override_colors/font_color = Color(0.9, 0.97, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0.1, 0.3, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 12
+text = "MARS\n  5"
+horizontal_alignment = 1
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="BackButton" type="Button" parent="CanvasLayer"]
+offset_left = 40.0
+offset_top = 40.0
+offset_right = 160.0
+offset_bottom = 90.0
+text = "VOLVER"
+
+[node name="PhaseTitle" type="Label" parent="CanvasLayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -250.0
+offset_top = 20.0
+offset_right = 250.0
+offset_bottom = 70.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.75, 0.92, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0.05, 0.2, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 32
+text = "INTO THE FUTURE"
+horizontal_alignment = 1
+
+[connection signal="pressed" from="Stage1" to="." method="_on_stage_1_pressed"]
+[connection signal="pressed" from="Stage2" to="." method="_on_stage_2_pressed"]
+[connection signal="pressed" from="Stage3" to="." method="_on_stage_3_pressed"]
+[connection signal="pressed" from="Stage4" to="." method="_on_stage_4_pressed"]
+[connection signal="pressed" from="Stage5" to="." method="_on_stage_5_pressed"]
+[connection signal="pressed" from="CanvasLayer/BackButton" to="." method="_on_back_button_pressed"]
