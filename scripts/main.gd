@@ -3,6 +3,7 @@ extends Node2D
 var entity_scene = preload("res://scenes/Entity.tscn")
 
 func _ready() -> void:
+	get_tree().paused = false
 	GameManager.reset_battle()
 	var diff := GameManager.get_stage_difficulty()
 	$EnemyBase.init_health(diff.get("enemy_hp", 1000))

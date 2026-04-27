@@ -39,16 +39,19 @@ func _ready() -> void:
 	circle.radius = attack_range
 	$AttackRange/CollisionShape2D.shape = circle
 
+	$Visual.unit_type = unit_type
 	if is_player_unit:
 		collision_layer = 1
 		collision_mask = 0
 		$AttackRange.collision_mask = 2
 		$Visual.color = PLAYER_COLORS[unit_type]
+		$Visual.scale.x = 1.0
 	else:
 		collision_layer = 2
 		collision_mask = 0
 		$AttackRange.collision_mask = 1
 		$Visual.color = ENEMY_COLORS[unit_type]
+		$Visual.scale.x = -1.0
 
 func _physics_process(delta: float) -> void:
 	if state == State.MOVING:
@@ -56,10 +59,11 @@ func _physics_process(delta: float) -> void:
 
 func _on_attack_range_area_entered(area: Area2D) -> void:
 	if state == State.KNOCKBACK: return
-	
+
 	targets.append(area)
 	if state == State.MOVING:
 		state = State.ATTACKING
+		$Visual.is_walking = false
 		$AttackCooldownTimer.start()
 
 func _on_attack_range_area_exited(area: Area2D) -> void:
@@ -67,6 +71,7 @@ func _on_attack_range_area_exited(area: Area2D) -> void:
 	if targets.is_empty() and state != State.KNOCKBACK:
 		state = State.MOVING
 		wall_placed = false
+		$Visual.is_walking = true
 
 func _on_attack_cooldown_timer_timeout() -> void:
 	if state == State.KNOCKBACK: return
@@ -78,6 +83,7 @@ func _on_attack_cooldown_timer_timeout() -> void:
 		return
 
 	# Efectos de ataque (Battle Cats style)
+	$Visual.play_attack()
 	if has_node("HitParticles"):
 		$HitParticles.emitting = true
 	if has_node("AttackSound") and $AttackSound.stream:
@@ -117,6 +123,8 @@ func take_damage(amount: int) -> void:
 
 func apply_knockback() -> void:
 	state = State.KNOCKBACK
+	$Visual.is_walking = false
+	$Visual.play_knockback_visual()
 	$AttackCooldownTimer.stop()
 	
 	var knockback_distance = 60.0
@@ -149,4 +157,7 @@ func apply_knockback() -> void:
 		targets = targets.filter(func(t): return is_instance_valid(t))
 		if not targets.is_empty():
 			state = State.ATTACKING
+			$Visual.is_walking = false
 			$AttackCooldownTimer.start()
+		else:
+			$Visual.is_walking = true

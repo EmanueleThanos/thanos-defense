@@ -5,7 +5,7 @@ func _ready() -> void:
 	_update_mp_display(GameManager.mp)
 	GameManager.tickets_changed.connect(_update_tickets_display)
 	GameManager.mp_changed.connect(_update_mp_display)
-	$VBoxContainer/MejorarButton.visible = GameManager.chapter_progress.get("legend", 0) >= 3
+	$VBoxContainer/MejorarButton.visible = GameManager.chapter_progress.get("legend", 0) >= 1
 
 func _update_tickets_display(amount: int) -> void:
 	$TicketsLabel.text = "Tickets: %d" % amount

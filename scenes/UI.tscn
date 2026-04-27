@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/ui.gd" id="1_ui_script"]
 
 [node name="UI" type="CanvasLayer"]
+process_mode = 3
 script = ExtResource("1_ui_script")
 
 [node name="BottomBar" type="ColorRect" parent="."]
@@ -23,4 +24,135 @@ offset_left = 900.0
 offset_top = 35.0
 offset_right = 1260.0
 offset_bottom = 90.0
-text = "$ 0"
+text = "€ 0"
+
+[node name="RetiradaButton" type="Button" parent="."]
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 120.0
+offset_bottom = 48.0
+theme_override_font_sizes/font_size = 15
+text = "☰  PAUSA"
+
+[node name="PauseOverlay" type="Control" parent="."]
+visible = false
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 0
+
+[node name="Dimmer" type="ColorRect" parent="PauseOverlay"]
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0, 0, 0, 0.6)
+mouse_filter = 0
+
+[node name="Panel" type="PanelContainer" parent="PauseOverlay"]
+offset_left = 440.0
+offset_top = 100.0
+offset_right = 840.0
+offset_bottom = 620.0
+
+[node name="VBox" type="VBoxContainer" parent="PauseOverlay/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="PauseOverlay/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 38
+text = "PAUSA"
+horizontal_alignment = 1
+
+[node name="Sep1" type="HSeparator" parent="PauseOverlay/Panel/VBox"]
+layout_mode = 2
+
+[node name="MusicRow" type="HBoxContainer" parent="PauseOverlay/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="MusicLabel" type="Label" parent="PauseOverlay/Panel/VBox/MusicRow"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Música"
+vertical_alignment = 1
+
+[node name="MusicSlider" type="HSlider" parent="PauseOverlay/Panel/VBox/MusicRow"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="SFXRow" type="HBoxContainer" parent="PauseOverlay/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="SFXLabel" type="Label" parent="PauseOverlay/Panel/VBox/SFXRow"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Efectos"
+vertical_alignment = 1
+
+[node name="SFXSlider" type="HSlider" parent="PauseOverlay/Panel/VBox/SFXRow"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.01
+value = 1.0
+
+[node name="Sep2" type="HSeparator" parent="PauseOverlay/Panel/VBox"]
+layout_mode = 2
+
+[node name="ContinuarButton" type="Button" parent="PauseOverlay/Panel/VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "CONTINUAR"
+
+[node name="RetiradaConfirmBtn" type="Button" parent="PauseOverlay/Panel/VBox"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(1, 0.35, 0.35, 1)
+text = "RETIRADA"
+
+[node name="ConfirmPanel" type="PanelContainer" parent="PauseOverlay"]
+visible = false
+offset_left = 490.0
+offset_top = 240.0
+offset_right = 790.0
+offset_bottom = 420.0
+
+[node name="VBox" type="VBoxContainer" parent="PauseOverlay/ConfirmPanel"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Question" type="Label" parent="PauseOverlay/ConfirmPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "¿Seguro que quieres\nrendirte?"
+horizontal_alignment = 1
+
+[node name="SiButton" type="Button" parent="PauseOverlay/ConfirmPanel/VBox"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(1, 0.35, 0.35, 1)
+text = "SÍ, RENDIRSE"
+
+[node name="NoButton" type="Button" parent="PauseOverlay/ConfirmPanel/VBox"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "NO, VOLVER"
+
+[connection signal="pressed" from="RetiradaButton" to="." method="_on_retirada_button_pressed"]
+[connection signal="pressed" from="PauseOverlay/Panel/VBox/ContinuarButton" to="." method="_on_continuar_pressed"]
+[connection signal="pressed" from="PauseOverlay/Panel/VBox/RetiradaConfirmBtn" to="." method="_on_retirada_confirm_pressed"]
+[connection signal="pressed" from="PauseOverlay/ConfirmPanel/VBox/SiButton" to="." method="_on_si_pressed"]
+[connection signal="pressed" from="PauseOverlay/ConfirmPanel/VBox/NoButton" to="." method="_on_no_pressed"]
+[connection signal="value_changed" from="PauseOverlay/Panel/VBox/MusicRow/MusicSlider" to="." method="_on_music_volume_changed"]
+[connection signal="value_changed" from="PauseOverlay/Panel/VBox/SFXRow/SFXSlider" to="." method="_on_sfx_volume_changed"]

@@ -101,14 +101,31 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -215.0
+offset_left = -280.0
 offset_top = -150.0
-offset_right = -15.0
+offset_right = -100.0
 offset_bottom = -70.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_font_sizes/font_size = 24
-text = "ABRIR BOLA"
+theme_override_font_sizes/font_size = 22
+text = "ABRIR x1"
+
+[node name="MultiDraw5Button" type="Button" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -90.0
+offset_top = -150.0
+offset_right = 90.0
+offset_bottom = -70.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 22
+text = "ABRIR x5"
 
 [node name="MultiDrawButton" type="Button" parent="."]
 visible = false
@@ -118,14 +135,31 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 15.0
+offset_left = 100.0
 offset_top = -150.0
-offset_right = 215.0
+offset_right = 280.0
 offset_bottom = -70.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 22
 text = "ABRIR x12"
+
+[node name="MultiDraw100Button" type="Button" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -90.0
+offset_top = -55.0
+offset_right = 90.0
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 22
+text = "ABRIR x100"
 
 [node name="TicketsLabel" type="Label" parent="."]
 layout_mode = 0
@@ -146,5 +180,7 @@ offset_bottom = 90.0
 text = "VOLVER"
 
 [connection signal="pressed" from="DrawButton" to="." method="_on_draw_button_pressed"]
-[connection signal="pressed" from="MultiDrawButton" to="." method="_on_multi_draw_button_pressed"]
+[connection signal="pressed" from="MultiDraw5Button" to="." method="_on_multi_5_pressed"]
+[connection signal="pressed" from="MultiDrawButton" to="." method="_on_multi_12_pressed"]
+[connection signal="pressed" from="MultiDraw100Button" to="." method="_on_multi_100_pressed"]
 [connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]

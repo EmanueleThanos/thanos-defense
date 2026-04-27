@@ -18,6 +18,8 @@ const ENEMY_INCOME_RATE := 15.0
 
 # --- Sistema de mejoras permanentes ---
 var mp: int = 0
+var music_volume: float = 1.0
+var sfx_volume: float   = 1.0
 var production_level: int = 1   # max 100  (MP/s en batalla)
 var base_hp_level: int = 1      # max 50   (+250 HP por nivel)
 var max_units_level: int = 1    # max 8    (3–10 unidades simultáneas)
@@ -202,6 +204,44 @@ func level_up_unit(unit_id: int) -> void:
 func sell_gacha_duplicate(unit_id: int) -> void:
 	mp += get_sell_price(unit_id)
 	mp_changed.emit(mp)
+
+# Saca `count` bolas, descuenta tickets, PERO no aplica los resultados todavía
+func draw_gacha_multi_preview(count: int) -> Array:
+	if tickets < count: return []
+	tickets -= count
+	tickets_changed.emit(tickets)
+	var results := []
+	var seen: Array[int] = []
+	for _i in count:
+		var entry := _weighted_gacha_draw()
+		var uid: int = entry["unit_id"]
+		results.append({
+			"unit_id":      uid,
+			"color":        entry["color"],
+			"is_duplicate": owned_units.has(uid) or seen.has(uid),
+			"sell_price":   get_sell_price(uid),
+		})
+		if not seen.has(uid):
+			seen.append(uid)
+	return results
+
+# Aplica los resultados: sell_indices son los índices que el jugador eligió vender
+func apply_gacha_results(results: Array, sell_indices: Array) -> void:
+	var earned := 0
+	for i in results.size():
+		var uid: int = results[i]["unit_id"]
+		if sell_indices.has(i):
+			earned += results[i]["sell_price"]
+		else:
+			if owned_units.has(uid):
+				if unit_levels[uid] < 100:
+					unit_levels[uid] += 1
+					unit_leveled_up.emit(uid, unit_levels[uid])
+			else:
+				owned_units.append(uid)
+	if earned > 0:
+		mp += earned
+		mp_changed.emit(mp)
 
 func draw_gacha_multi(count: int) -> Array:
 	var results := []
